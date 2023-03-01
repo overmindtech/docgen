@@ -57,7 +57,7 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 			writeDescription = false
 		} else if after, found = strings.CutPrefix(line, "+overmind:description"); found {
 			writeDescription = true
-			line = after
+			line = strings.Trim(after, " ")
 		}
 
 		// If we are within the description block, collect it

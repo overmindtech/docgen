@@ -6,6 +6,13 @@ import (
 	"testing"
 )
 
+//go:generate ./docgen out.md
+// +overmind:type http
+// +overmind:get Runs a HEAD request against a given URL
+// +overmind:list **Not supported**
+// +overmind:search By ARN
+// +overmind:description foo
+
 func testSD(sd SourceDoc, t *testing.T) {
 	if sd.Type != "http" {
 		t.Errorf("expected type to be \"http\", got %v", sd.Type)
