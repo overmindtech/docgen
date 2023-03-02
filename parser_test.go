@@ -11,7 +11,10 @@ import (
 // +overmind:get Runs a HEAD request against a given URL
 // +overmind:list **Not supported**
 // +overmind:search By ARN
-// +overmind:description foo
+// +overmind:description
+// The HTTP source runs HEAD requests to get the details of an HTTP endpoint.
+// All items are returned in the "global" scope and container links to
+// certificates and DNS entries
 
 func testSD(sd SourceDoc, t *testing.T) {
 	if sd.Type != "http" {
