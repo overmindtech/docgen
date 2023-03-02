@@ -5,6 +5,7 @@
 This tool generates markdown docs for Overmind sources based on comments in the code. For example these comments:
 
 ```go
+//go:generate docgen ./docs
 // +overmind:type http
 // +overmind:get Runs a HEAD request against a given URL
 // +overmind:list **Not supported**
@@ -30,6 +31,14 @@ certificates and DNS entries
 * **List:** **Not supported**
 * **Search:** By ARN
 ```
+
+Note that the format of the `go generate` comment is:
+
+```
+//go:generate docgen {destination_folder}
+```
+
+Where `destination_folder` is relative to the current file
 
 ## Installation
 

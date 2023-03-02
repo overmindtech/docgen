@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-//go:generate ./docgen out.md
+//go:generate ./docgen ./docs
 // +overmind:type http
 // +overmind:get Runs a HEAD request against a given URL
 // +overmind:list **Not supported**

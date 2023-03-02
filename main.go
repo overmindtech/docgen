@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"go/parser"
 	"go/token"
 	"log"
 	"os"
+	"path"
 )
 
 func main() {
@@ -15,10 +17,19 @@ func main() {
 	}
 
 	if len(os.Args) != 2 {
-		log.Fatal("Must pass the desired output file as the only argument")
+		log.Fatal("Must pass the desired output path as the only argument")
 	}
 
-	outFile := os.Args[1]
+	outPath := os.Args[1]
+
+	if _, err := os.Stat(outPath); os.IsNotExist(err) {
+		log.Printf("Creating output folder: %v", outPath)
+		err := os.Mkdir(outPath, os.ModePerm)
+
+		if err != nil {
+			log.Fatalf("Error creating folder: %v", err)
+		}
+	}
 
 	log.Printf("Generating Overmind docs for %v", fileName)
 
@@ -40,6 +51,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error generating markdown: %v", err)
 	}
+
+	outFile := path.Join(outPath, fmt.Sprintf("%v.md", doc.Type))
 
 	err = os.WriteFile(outFile, []byte(md), 0644)
 
