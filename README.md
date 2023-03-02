@@ -45,13 +45,13 @@ Where `destination_folder` is relative to the current file
 Intel:
 
 ```shell
-curl -o ~/.local/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-amd64 && chmod +x ~/.local/docgen
+mkdir -p ~/.local/bin/ && curl -Lo ~/.local/bin/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-amd64 && chmod +x ~/.local/bin/docgen
 ```
 
 ARM:
 
 ```shell
-curl -o ~/.local/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-arm64 && chmod +x ~/.local/docgen
+mkdir -p ~/.local/bin/ && curl -Lo ~/.local/bin/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-arm64 && chmod +x ~/.local/bin/docgen
 ```
 
 ## Comment Tags
