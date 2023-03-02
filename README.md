@@ -33,7 +33,17 @@ certificates and DNS entries
 
 ## Installation
 
+Intel:
 
+```shell
+curl -o ~/.local/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-amd64 && chmod +x ~/.local/docgen
+```
+
+ARM:
+
+```shell
+curl -o ~/.local/docgen https://github.com/overmindtech/docgen/releases/latest/download/docgen-arm64 && chmod +x ~/.local/docgen
+```
 
 ## Comment Tags
 
