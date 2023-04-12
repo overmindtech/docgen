@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/parser"
 	"go/token"
@@ -31,7 +32,7 @@ func main() {
 		}
 	}
 
-	log.Printf("Generating Overmind docs for %v", fileName)
+	log.Printf("Generating docs data for %v", fileName)
 
 	fset := token.NewFileSet()
 	parsed, err := parser.ParseFile(fset, fileName, nil, parser.ParseComments)
@@ -46,19 +47,20 @@ func main() {
 		doc.ParseGroup(group)
 	}
 
-	md, err := doc.FormatMarkdown()
+	// Format as JSON
+	b, err := json.MarshalIndent(doc, "", "	")
 
 	if err != nil {
-		log.Fatalf("Error generating markdown: %v", err)
+		log.Fatalf("Error generating JSON: %v", err)
 	}
 
-	outFile := path.Join(outPath, fmt.Sprintf("%v.md", doc.Type))
+	outFile := path.Join(outPath, fmt.Sprintf("%v.json", doc.OvermindType))
 
-	err = os.WriteFile(outFile, []byte(md), 0644)
+	err = os.WriteFile(outFile, b, 0644)
 
 	if err != nil {
 		log.Fatalf("Error writing file %v: %v", outFile, err)
 	}
 
-	log.Printf("Markdown written: %v", outFile)
+	log.Printf("JSON written: %v", outFile)
 }

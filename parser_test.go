@@ -7,30 +7,50 @@ import (
 )
 
 //go:generate ./docgen ./docs
-// +overmind:type http
-// +overmind:get Runs a HEAD request against a given URL
-// +overmind:list **Not supported**
-// +overmind:search By ARN
-// +overmind:description
-// The HTTP source runs HEAD requests to get the details of an HTTP endpoint.
-// All items are returned in the "global" scope and container links to
-// certificates and DNS entries
+// +overmind:type ec2-instance
+// +overmind:descriptiveType EC2 Instance
+// +overmind:get Get an EC2 instance by ID
+// +overmind:list List all EC2 instances
+// +overmind:search Search for EC2 instances by name
+// +overmind:group AWS
+// +overmind:link ip
+// +overmind:link ec2-security-group
 
 func testSD(sd SourceDoc, t *testing.T) {
-	if sd.Type != "http" {
-		t.Errorf("expected type to be \"http\", got %v", sd.Type)
+	if sd.OvermindType != "ec2-instance" {
+		t.Errorf("expected type to be ec2-instance, got %v", sd.OvermindType)
 	}
 
-	if sd.Get != "Runs a HEAD request against a given URL" {
-		t.Errorf("expected get to be \"Runs a HEAD request against a given URL\", got %v", sd.Get)
+	if sd.DescriptiveType != "EC2 Instance" {
+		t.Errorf("expected descriptive type to be EC2 Instance, got %v", sd.DescriptiveType)
 	}
 
-	if sd.List != "**Not supported**" {
-		t.Errorf("expected list to be \"**Not supported**\", got %v", sd.List)
+	if sd.GetDescription != "Get an EC2 instance by ID" {
+		t.Errorf("expected get description to be Get an EC2 instance by ID, got %v", sd.GetDescription)
 	}
 
-	if sd.Description() != "This type does HTTP requests e.g.\n\nhttps://www.google.com" {
-		t.Errorf("expected description to be \"This type does HTTP requests e.g.\", got %v", sd.Description())
+	if sd.ListDescription != "List all EC2 instances" {
+		t.Errorf("expected list description to be List all EC2 instances, got %v", sd.ListDescription)
+	}
+
+	if sd.SearchDescription != "Search for EC2 instances by name" {
+		t.Errorf("expected search description to be Search for EC2 instances by name, got %v", sd.SearchDescription)
+	}
+
+	if sd.SourceGroup != "AWS" {
+		t.Errorf("expected source group to be AWS, got %v", sd.SourceGroup)
+	}
+
+	if len(sd.Links) != 2 {
+		t.Errorf("expected 2 links, got %v", len(sd.Links))
+	}
+
+	if sd.Links[0] != "ip" {
+		t.Errorf("expected first link to be ip, got %v", sd.Links[0])
+	}
+
+	if sd.Links[1] != "ec2-security-group" {
+		t.Errorf("expected second link to be ec2-security-group, got %v", sd.Links[1])
 	}
 }
 
@@ -38,50 +58,49 @@ func TestParseFile(t *testing.T) {
 	testFiles := map[string]string{
 		"all together": `package main
 
-		//go:generate sourceDoc
-		// +overmind:type http
-		// +overmind:get Runs a HEAD request against a given URL
-		// +overmind:list **Not supported**
-		// +overmind:description
-		// This type does HTTP requests e.g.
-		//
-		// https://www.google.com
-		//
-		//
+		// +overmind:type ec2-instance
+		// +overmind:descriptiveType EC2 Instance
+		// +overmind:get Get an EC2 instance by ID
+		// +overmind:list List all EC2 instances
+		// +overmind:search Search for EC2 instances by name
+		// +overmind:group AWS
+		// +overmind:link ip
+		// +overmind:link ec2-security-group		
 		
 		func Foo() bool {
 		
 		}`,
 		"all separate": `package main
 
-		//go:generate sourceDoc
-		// +overmind:type http
+		// +overmind:type ec2-instance
 
-		// +overmind:get Runs a HEAD request against a given URL
+		// +overmind:descriptiveType EC2 Instance
 
-		// +overmind:list **Not supported**
+		// +overmind:get Get an EC2 instance by ID
 
-		// +overmind:description
-		// This type does HTTP requests e.g.
-		//
-		// https://www.google.com
-		//
-		//
+		// +overmind:list List all EC2 instances
+
+		// +overmind:search Search for EC2 instances by name
+		// +overmind:group AWS
+
+		// +overmind:link ip
+		// +overmind:link ec2-security-group
+		
 		
 		func Foo() bool {
 		
 		}`,
 		"reverse order": `package main
 
-		// +overmind:description
-		// This type does HTTP requests e.g.
-		//
-		// https://www.google.com
-		//
-		//
-		// +overmind:type http
-		// +overmind:get Runs a HEAD request against a given URL
-		// +overmind:list **Not supported**
+		// +overmind:group AWS
+		// +overmind:list List all EC2 instances
+		// +overmind:type ec2-instance
+		// +overmind:link ip
+		// +overmind:search Search for EC2 instances by name
+		// +overmind:descriptiveType EC2 Instance
+		// +overmind:link ec2-security-group
+		// +overmind:get Get an EC2 instance by ID
+		
 		
 		func Foo() bool {
 		

@@ -19,17 +19,33 @@ func ParseFile(file *ast.File) SourceDoc {
 }
 
 type SourceDoc struct {
-	Type             string // Parsed from a +overmind:type comment
-	Get              string // Parsed from a +overmind:get comment
-	List             string // Parsed from a +overmind:list comment
-	Search           string // Parsed from a +overmind:search comment
-	descriptionLines []string
-}
+	// The type that the source returns e.g. `ec2-instance` Parsed from the
+	// +overmind:type comment
+	OvermindType string `json:"type"`
 
-// Description Returns the description of the source, parsed from a
-// +overmind:description comment over multipe lines
-func (s *SourceDoc) Description() string {
-	return strings.Trim(strings.Join(s.descriptionLines, "\n"), "\n")
+	// The desriptive type e.g. `EC2 Instance` Parsed from the
+	// +overmind:descriptiveType
+	DescriptiveType string `json:"descriptiveType"`
+
+	// Description of the Get method for this source. Parsed from the
+	// +overmind:get comment
+	GetDescription string `json:"getDescription,omitempty"`
+
+	// Description of the List method for this source. Parsed from the
+	// +overmind:list comment
+	ListDescription string `json:"listDescription,omitempty"`
+
+	// Description of the Search method for this source. Parsed from the
+	// +overmind:search comment
+	SearchDescription string `json:"searchDescription,omitempty"`
+
+	// The group that this source belongs to e.g. "AWS". Parsed from the
+	// +overmind:group comment
+	SourceGroup string `json:"group"`
+
+	// Types of items that this can be linked to, parsed from many
+	// +overmind:link comments
+	Links []string `json:"links"`
 }
 
 // ParseGroup Parses a comment group and adds the details to the SourceDoc
@@ -37,32 +53,25 @@ func (s *SourceDoc) Description() string {
 func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 	var after string
 	var found bool
-	var writeDescription bool
 
 	lines := group.Text()
 
 	for _, line := range strings.Split(lines, "\n") {
 		// Check for prefixes
 		if after, found = strings.CutPrefix(line, "+overmind:type"); found {
-			s.Type = strings.Trim(after, " ")
-			writeDescription = false
+			s.OvermindType = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:descriptiveType"); found {
+			s.DescriptiveType = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:get"); found {
-			s.Get = strings.Trim(after, " ")
-			writeDescription = false
+			s.GetDescription = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:list"); found {
-			s.List = strings.Trim(after, " ")
-			writeDescription = false
+			s.ListDescription = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:search"); found {
-			s.Search = strings.Trim(after, " ")
-			writeDescription = false
-		} else if after, found = strings.CutPrefix(line, "+overmind:description"); found {
-			writeDescription = true
-			line = strings.Trim(after, " ")
-		}
-
-		// If we are within the description block, collect it
-		if writeDescription {
-			s.descriptionLines = append(s.descriptionLines, line)
+			s.SearchDescription = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:group"); found {
+			s.SourceGroup = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:link"); found {
+			s.Links = append(s.Links, strings.Trim(after, " "))
 		}
 	}
 }
