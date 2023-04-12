@@ -13,7 +13,8 @@ This tool generates JSON that can then be used to generate docs for Overmind sou
 // +overmind:search Search for EC2 instances by name
 // +overmind:group AWS
 // +overmind:link ip
-// +overmind:link ec2-security-group```
+// +overmind:link ec2-security-group
+```
 
 Produces this markdown:
 
