@@ -2,34 +2,34 @@
 
 *Documentation generation for Overmind sources*
 
-This tool generates markdown docs for Overmind sources based on comments in the code. For example these comments:
+This tool generates JSON that can then be used to generate docs for Overmind sources. The format of the comments is as follows:
 
 ```go
 //go:generate docgen ./docs
-// +overmind:type http
-// +overmind:get Runs a HEAD request against a given URL
-// +overmind:list **Not supported**
-// +overmind:search By ARN
-// +overmind:description
-// The HTTP source runs HEAD requests to get the details of an HTTP endpoint.
-// All items are returned in the "global" scope and container links to
-// certificates and DNS entries
-```
+// +overmind:type ec2-instance
+// +overmind:descriptiveType EC2 Instance
+// +overmind:get Get an EC2 instance by ID
+// +overmind:list List all EC2 instances
+// +overmind:search Search for EC2 instances by name
+// +overmind:group AWS
+// +overmind:link ip
+// +overmind:link ec2-security-group```
 
 Produces this markdown:
 
-```markdown
-# http
-
-The HTTP source runs HEAD requests to get the details of an HTTP endpoint.
-All items are returned in the "global" scope and container links to
-certificates and DNS entries
-
-## Supported Methods
-
-* **Get:** Runs a HEAD request against a given URL
-* **List:** **Not supported**
-* **Search:** By ARN
+```json
+{
+	"type": "ec2-instance",
+	"descriptiveType": "EC2 Instance",
+	"getDescription": "Get an EC2 instance by ID",
+	"listDescription": "List all EC2 instances",
+	"searchDescription": "Search for EC2 instances by name",
+	"group": "AWS",
+	"links": [
+		"ip",
+		"ec2-security-group"
+	]
+}
 ```
 
 Note that the format of the `go generate` comment is:
@@ -62,13 +62,10 @@ All tags gor a given type should exist within the same file, however they can li
 
 These tags must include the desired documentation following the tag on a single line
 
-* `+overmind:type`: The type of item returned by the source
-* `+overmind:get`: Documentation for the get method
-* `+overmind:list`: Documentation for the get method
-* `+overmind:search`: Documentation for the Search method, if this is omitted the search method will not be documented
-
-## Multi-Line Tags
-
-These tags will consume documentation from the line containing the tag, and all subsequent lines until either the end of the comment or another tag is found.
-
-* `+overmind:description`: Detailed description of the source in this file
+* `+overmind:type`: The type that the source returns e.g. `ec2-instance`
+* `+overmind:descriptiveType: The desriptive type e.g. `EC2 Instance`
+* `+overmind:get`: Description of the Get method for this source
+* `+overmind:list`: Description of the List method for this source
+* `+overmind:search`: Description of the Search method for this source
+* `+overmind:group`: The group that this source belongs to e.g. "AWS"
+* `+overmind:link`: Types of items that this can be linked to
