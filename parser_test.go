@@ -45,12 +45,12 @@ func testSD(sd SourceDoc, t *testing.T) {
 		t.Errorf("expected 2 links, got %v", len(sd.Links))
 	}
 
-	if sd.Links[0] != "ip" {
-		t.Errorf("expected first link to be ip, got %v", sd.Links[0])
+	if sd.Links[0] != "ec2-security-group" {
+		t.Errorf("expected second link to be ec2-security-group, got %v", sd.Links[1])
 	}
 
-	if sd.Links[1] != "ec2-security-group" {
-		t.Errorf("expected second link to be ec2-security-group, got %v", sd.Links[1])
+	if sd.Links[1] != "ip" {
+		t.Errorf("expected first link to be ip, got %v", sd.Links[0])
 	}
 }
 
@@ -97,9 +97,9 @@ func TestParseFile(t *testing.T) {
 		// +overmind:type ec2-instance
 		// +overmind:link ip
 		// +overmind:link ip
-		// +overmind:link ip
 		// +overmind:search Search for EC2 instances by name
 		// +overmind:descriptiveType EC2 Instance
+		// +overmind:link ip
 		// +overmind:link ec2-security-group
 		// +overmind:get Get an EC2 instance by ID
 		

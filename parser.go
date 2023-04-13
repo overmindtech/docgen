@@ -2,6 +2,7 @@ package main
 
 import (
 	"go/ast"
+	"sort"
 	"strings"
 )
 
@@ -81,4 +82,7 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 	for link := range linksMap {
 		s.Links = append(s.Links, link)
 	}
+
+	// Sort links alphabetically
+	sort.Strings(s.Links)
 }
