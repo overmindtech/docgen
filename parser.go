@@ -15,7 +15,7 @@ func ParseFile(file *ast.File) SourceDoc {
 	}
 
 	for _, group := range file.Comments {
-		sd.ParseGroup(group)
+		sd.parseGroup(group)
 	}
 
 	// Combine the links map into a slice and sort
@@ -67,9 +67,9 @@ type SourceDoc struct {
 	linksMap map[string]struct{} `json:"-"`
 }
 
-// ParseGroup Parses a comment group and adds the details to the SourceDoc
+// parseGroup Parses a comment group and adds the details to the SourceDoc
 // struct
-func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
+func (s *SourceDoc) parseGroup(group *ast.CommentGroup) {
 	var after string
 	var found bool
 

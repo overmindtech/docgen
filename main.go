@@ -41,11 +41,7 @@ func main() {
 		log.Printf("Error parsing file: %v", err)
 	}
 
-	doc := SourceDoc{}
-
-	for _, group := range parsed.Comments {
-		doc.ParseGroup(group)
-	}
+	doc := ParseFile(parsed)
 
 	// Format as JSON
 	b, err := json.MarshalIndent(doc, "", "	")
