@@ -18,6 +18,19 @@ func ParseFile(file *ast.File) SourceDoc {
 		sd.ParseGroup(group)
 	}
 
+	// Combine the links map into a slice and sort
+	links := make([]string, 0)
+
+	// Combine the links map into a slice
+	for link := range sd.linksMap {
+		links = append(links, link)
+	}
+
+	// Sort links alphabetically
+	sort.Strings(links)
+
+	sd.Links = links
+
 	return sd
 }
 
@@ -80,16 +93,4 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 			s.linksMap[strings.Trim(after, " ")] = struct{}{}
 		}
 	}
-
-	links := make([]string, 0)
-
-	// Combine the links map into a slice
-	for link := range s.linksMap {
-		links = append(links, link)
-	}
-
-	// Sort links alphabetically
-	sort.Strings(links)
-
-	s.Links = links
 }
