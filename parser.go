@@ -10,7 +10,9 @@ import (
 // file. Go files can be parsed with `parser.parseFile()` from the "go/parser"
 // package
 func ParseFile(file *ast.File) SourceDoc {
-	sd := SourceDoc{}
+	sd := SourceDoc{
+		linksMap: make(map[string]struct{}),
+	}
 
 	for _, group := range file.Comments {
 		sd.ParseGroup(group)
@@ -47,6 +49,9 @@ type SourceDoc struct {
 	// Types of items that this can be linked to, parsed from many
 	// +overmind:link comments
 	Links []string `json:"links"`
+
+	// Used for deduplication
+	linksMap map[string]struct{} `json:"-"`
 }
 
 // ParseGroup Parses a comment group and adds the details to the SourceDoc
@@ -56,8 +61,6 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 	var found bool
 
 	lines := group.Text()
-
-	linksMap := make(map[string]bool)
 
 	for _, line := range strings.Split(lines, "\n") {
 		// Check for prefixes
@@ -74,15 +77,19 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 		} else if after, found = strings.CutPrefix(line, "+overmind:group"); found {
 			s.SourceGroup = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:link"); found {
-			linksMap[strings.Trim(after, " ")] = true
+			s.linksMap[strings.Trim(after, " ")] = struct{}{}
 		}
 	}
 
+	links := make([]string, 0)
+
 	// Combine the links map into a slice
-	for link := range linksMap {
-		s.Links = append(s.Links, link)
+	for link := range s.linksMap {
+		links = append(links, link)
 	}
 
 	// Sort links alphabetically
-	sort.Strings(s.Links)
+	sort.Strings(links)
+
+	s.Links = links
 }
