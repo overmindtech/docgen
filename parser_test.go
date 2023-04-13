@@ -96,6 +96,8 @@ func TestParseFile(t *testing.T) {
 		// +overmind:list List all EC2 instances
 		// +overmind:type ec2-instance
 		// +overmind:link ip
+		// +overmind:link ip
+		// +overmind:link ip
 		// +overmind:search Search for EC2 instances by name
 		// +overmind:descriptiveType EC2 Instance
 		// +overmind:link ec2-security-group

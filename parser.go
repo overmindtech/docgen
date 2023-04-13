@@ -56,6 +56,8 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 
 	lines := group.Text()
 
+	linksMap := make(map[string]bool)
+
 	for _, line := range strings.Split(lines, "\n") {
 		// Check for prefixes
 		if after, found = strings.CutPrefix(line, "+overmind:type"); found {
@@ -71,7 +73,12 @@ func (s *SourceDoc) ParseGroup(group *ast.CommentGroup) {
 		} else if after, found = strings.CutPrefix(line, "+overmind:group"); found {
 			s.SourceGroup = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:link"); found {
-			s.Links = append(s.Links, strings.Trim(after, " "))
+			linksMap[strings.Trim(after, " ")] = true
 		}
+	}
+
+	// Combine the links map into a slice
+	for link := range linksMap {
+		s.Links = append(s.Links, link)
 	}
 }
