@@ -86,8 +86,8 @@ func TestParseFile(t *testing.T) {
 		// +overmind:group AWS
 		// +overmind:link ip
 		// +overmind:link ec2-security-group	
-		// +overmind:terraform:query resource_type.id	
-		// +overmind:terraform:query resource_type2.id	
+		// +overmind:terraform:queryMap resource_type.id	
+		// +overmind:terraform:queryMap resource_type2.id	
 		
 		func Foo() bool {
 		
@@ -108,9 +108,9 @@ func TestParseFile(t *testing.T) {
 		// +overmind:link ip
 		// +overmind:link ec2-security-group
 		
-		// +overmind:terraform:query resource_type2.id	
+		// +overmind:terraform:queryMap resource_type2.id	
 
-		// +overmind:terraform:query resource_type.id	
+		// +overmind:terraform:queryMap resource_type.id	
 		
 		// +overmind:terraform:method GET
 
@@ -121,8 +121,8 @@ func TestParseFile(t *testing.T) {
 		}`,
 		"reverse order": `package main
 		
-		// +overmind:terraform:query resource_type2.id	
-		// +overmind:terraform:query resource_type.id	
+		// +overmind:terraform:queryMap resource_type2.id	
+		// +overmind:terraform:queryMap resource_type.id	
 		// +overmind:group AWS
 		// +overmind:list List all EC2 instances
 		// +overmind:type ec2-instance

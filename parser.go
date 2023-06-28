@@ -80,7 +80,7 @@ type SourceDoc struct {
 	// Where the `query` data should come from when converting a `terraform
 	// plan` to an Overmind query. This is in the format
 	// `{resource_type}.{attribute_name}` and comes from the:
-	// +overmind:terraform:query comment. Multiple comments are supported
+	// +overmind:terraform:queryMap comment. Multiple comments are supported
 	TerraformQueryMaps []string `json:"terraformQuery,omitempty"`
 
 	// The method the query should have when converting from a `terraform plan`
@@ -124,7 +124,7 @@ func (s *SourceDoc) parseGroup(group *ast.CommentGroup) error {
 			s.SearchDescription = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:group"); found {
 			s.SourceGroup = strings.Trim(after, " ")
-		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:query"); found {
+		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:queryMap"); found {
 			s.TerraformQueryMaps = append(s.TerraformQueryMaps, strings.Trim(after, " "))
 		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:method"); found {
 			method := strings.Trim(after, " ")
