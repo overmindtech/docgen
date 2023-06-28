@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"sort"
 	"strings"
@@ -9,13 +10,19 @@ import (
 // ParseFile Parses overmind documentation comments out of an already parsed go
 // file. Go files can be parsed with `parser.parseFile()` from the "go/parser"
 // package
-func ParseFile(file *ast.File) SourceDoc {
+func ParseFile(file *ast.File) (SourceDoc, error) {
 	sd := SourceDoc{
 		linksMap: make(map[string]struct{}),
 	}
 
+	var err error
+
 	for _, group := range file.Comments {
-		sd.parseGroup(group)
+		err = sd.parseGroup(group)
+
+		if err != nil {
+			return sd, err
+		}
 	}
 
 	// Combine the links map into a slice and sort
@@ -31,7 +38,18 @@ func ParseFile(file *ast.File) SourceDoc {
 
 	sd.Links = links
 
-	return sd
+	// Set Terraform defaults if required
+	if sd.TerraformQuery != "" {
+		if sd.TerraformMethod == "" {
+			sd.TerraformMethod = "GET"
+		}
+
+		if sd.TerraformScope == "" {
+			sd.TerraformScope = "*"
+		}
+	}
+
+	return sd, nil
 }
 
 type SourceDoc struct {
@@ -59,6 +77,23 @@ type SourceDoc struct {
 	// +overmind:group comment
 	SourceGroup string `json:"group"`
 
+	// Where the `query` data should come from when converting a `terraform
+	// plan` to an Overmind query. This is in the format
+	// `{resource_type}.{attribute_name}` and comes from the:
+	// +overmind:terraform:query comment
+	TerraformQuery string `json:"terraformQuery,omitempty"`
+
+	// The method the query should have when converting from a `terraform plan`
+	// to an overmind query. Defaults to `GET`. Valid values: `GET`, `LIST`,
+	// `SEARCH`. Defined by the comment:
+	// +overmind:terraform:method SEARCH
+	TerraformMethod string `json:"terraformMethod,omitempty"`
+
+	// The scope that the query should have when converting from a `terraform
+	// plan` to an Overmind query, defaults to `*`. Defined by the comment:
+	// +overmind:terraform:scope global
+	TerraformScope string `json:"terraformScope,omitempty"`
+
 	// Types of items that this can be linked to, parsed from many
 	// +overmind:link comments
 	Links []string `json:"links"`
@@ -69,7 +104,7 @@ type SourceDoc struct {
 
 // parseGroup Parses a comment group and adds the details to the SourceDoc
 // struct
-func (s *SourceDoc) parseGroup(group *ast.CommentGroup) {
+func (s *SourceDoc) parseGroup(group *ast.CommentGroup) error {
 	var after string
 	var found bool
 
@@ -89,8 +124,23 @@ func (s *SourceDoc) parseGroup(group *ast.CommentGroup) {
 			s.SearchDescription = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:group"); found {
 			s.SourceGroup = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:query"); found {
+			s.TerraformQuery = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:method"); found {
+			method := strings.Trim(after, " ")
+			switch method {
+			case "GET", "LIST", "SEARCH":
+				s.TerraformMethod = method
+			default:
+				return fmt.Errorf("unsupported value for +overmind:terraform:method: %v Must be either GET, LIST or SEARCH", method)
+			}
+			s.TerraformMethod = strings.Trim(after, " ")
+		} else if after, found = strings.CutPrefix(line, "+overmind:terraform:scope"); found {
+			s.TerraformScope = strings.Trim(after, " ")
 		} else if after, found = strings.CutPrefix(line, "+overmind:link"); found {
 			s.linksMap[strings.Trim(after, " ")] = struct{}{}
 		}
 	}
+
+	return nil
 }

@@ -52,6 +52,18 @@ func testSD(sd SourceDoc, t *testing.T) {
 	if sd.Links[1] != "ip" {
 		t.Errorf("expected first link to be ip, got %v", sd.Links[0])
 	}
+
+	if sd.TerraformMethod != "GET" {
+		t.Errorf("expected terraform method to be GET, got %v", sd.TerraformMethod)
+	}
+
+	if sd.TerraformQuery != "resource_type.id" {
+		t.Errorf("expected terraform query to be resource_type.id, got %v", sd.TerraformQuery)
+	}
+
+	if sd.TerraformScope != "*" {
+		t.Errorf("expected terraform scope to be *, got %v", sd.TerraformScope)
+	}
 }
 
 func TestParseFile(t *testing.T) {
@@ -65,7 +77,8 @@ func TestParseFile(t *testing.T) {
 		// +overmind:search Search for EC2 instances by name
 		// +overmind:group AWS
 		// +overmind:link ip
-		// +overmind:link ec2-security-group		
+		// +overmind:link ec2-security-group	
+		// +overmind:terraform:query resource_type.id	
 		
 		func Foo() bool {
 		
@@ -86,12 +99,19 @@ func TestParseFile(t *testing.T) {
 		// +overmind:link ip
 		// +overmind:link ec2-security-group
 		
+
+		// +overmind:terraform:query resource_type.id	
+		
+		// +overmind:terraform:method GET
+
+		// +overmind:terraform:scope *
 		
 		func Foo() bool {
 		
 		}`,
 		"reverse order": `package main
 
+		// +overmind:terraform:query resource_type.id	
 		// +overmind:group AWS
 		// +overmind:list List all EC2 instances
 		// +overmind:type ec2-instance
@@ -118,7 +138,11 @@ func TestParseFile(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sd := ParseFile(parsed)
+			sd, err := ParseFile(parsed)
+
+			if err != nil {
+				t.Error(err)
+			}
 
 			testSD(sd, t)
 

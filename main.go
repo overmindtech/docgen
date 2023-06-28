@@ -41,7 +41,11 @@ func main() {
 		log.Printf("Error parsing file: %v", err)
 	}
 
-	doc := ParseFile(parsed)
+	doc, err := ParseFile(parsed)
+
+	if err != nil {
+		log.Fatalf("Error parsing file %v: %v", fileName, err)
+	}
 
 	// Format as JSON
 	b, err := json.MarshalIndent(doc, "", "	")
