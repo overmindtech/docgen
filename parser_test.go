@@ -57,8 +57,16 @@ func testSD(sd SourceDoc, t *testing.T) {
 		t.Errorf("expected terraform method to be GET, got %v", sd.TerraformMethod)
 	}
 
-	if sd.TerraformQuery != "resource_type.id" {
-		t.Errorf("expected terraform query to be resource_type.id, got %v", sd.TerraformQuery)
+	if len(sd.TerraformQueryMaps) != 2 {
+		t.Errorf("expected 2 terraform query maps, got %v", len(sd.TerraformQueryMaps))
+	}
+
+	if sd.TerraformQueryMaps[0] != "resource_type.id" {
+		t.Errorf("expected terraform query map to be resource_type.id, got %v", sd.TerraformQueryMaps[0])
+	}
+
+	if sd.TerraformQueryMaps[1] != "resource_type2.id" {
+		t.Errorf("expected terraform query map to be resource_type2.id, got %v", sd.TerraformQueryMaps[1])
 	}
 
 	if sd.TerraformScope != "*" {
@@ -79,6 +87,7 @@ func TestParseFile(t *testing.T) {
 		// +overmind:link ip
 		// +overmind:link ec2-security-group	
 		// +overmind:terraform:query resource_type.id	
+		// +overmind:terraform:query resource_type2.id	
 		
 		func Foo() bool {
 		
@@ -99,6 +108,7 @@ func TestParseFile(t *testing.T) {
 		// +overmind:link ip
 		// +overmind:link ec2-security-group
 		
+		// +overmind:terraform:query resource_type2.id	
 
 		// +overmind:terraform:query resource_type.id	
 		
@@ -110,7 +120,8 @@ func TestParseFile(t *testing.T) {
 		
 		}`,
 		"reverse order": `package main
-
+		
+		// +overmind:terraform:query resource_type2.id	
 		// +overmind:terraform:query resource_type.id	
 		// +overmind:group AWS
 		// +overmind:list List all EC2 instances
@@ -123,7 +134,7 @@ func TestParseFile(t *testing.T) {
 		// +overmind:link ec2-security-group
 		// +overmind:get Get an EC2 instance by ID
 		
-		
+
 		func Foo() bool {
 		
 		}`,
