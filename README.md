@@ -14,6 +14,9 @@ This tool generates JSON that can then be used to generate docs for Overmind sou
 // +overmind:group AWS
 // +overmind:link ip
 // +overmind:link ec2-security-group
+// +overmind:terraform:method SEARCH
+// +overmind:terraform:query aws_autoscaling_group.name
+// +overmind:terraform:scope global
 ```
 
 Produces this markdown:
@@ -70,3 +73,6 @@ These tags must include the desired documentation following the tag on a single 
 * `+overmind:search`: Description of the Search method for this source
 * `+overmind:group`: The group that this source belongs to e.g. "AWS"
 * `+overmind:link`: Types of items that this can be linked to
+* `+overmind:terraform:method`: The method the query should have when converting from a `terraform plan` to an overmind query. Defaults to `GET`. Valid values: `GET`, `LIST`, `SEARCH`
+* `+overmind:terraform:query`:  Where the `query` data should come from when converting a `terraform plan` to an Overmind query. This is in the format `{resource_type}.{attribute_name}`
+* `+overmind:terraform:scope`: The scope that the query should have when converting from a `terraform plan` to an Overmind query, defaults to `*`
