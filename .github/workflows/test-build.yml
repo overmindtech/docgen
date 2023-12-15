@@ -58,7 +58,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
 
       - name: Upload Binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.goarch }}
           path: docgen-${{ matrix.goarch }}
