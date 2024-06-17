@@ -1,3 +1,3 @@
 module github.com/overmindtech/docgen
 
-go 1.22.3
+go 1.22.4
